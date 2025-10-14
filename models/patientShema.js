@@ -39,6 +39,11 @@ const patientShema = mongoose.Schema({
         diseaseName: {
                 type: String,
                 required: true,min:5, max: 30
+        },
+        status: {
+                type: String,
+                enum: ['Pending', 'Scheduled'],
+                default: 'Pending'
         }
 }, {timestamps: true});
 

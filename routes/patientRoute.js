@@ -24,6 +24,7 @@ router.get("/", authMiddleware(["admin"]), async (req, res) => {
 //Route end point for enter patients data
 router.post("/", async (req, res) => {
   const {
+    userId,
     name,
     age,
     mobile,
@@ -35,6 +36,9 @@ router.post("/", async (req, res) => {
   } = req.body;
 
   try {
+    if (!userId) {
+      return res.status(400).json({ message: "Register or login first." });
+    }
     if (!name) {
       return res.status(400).json({ message: "Name is not valid" });
     }
@@ -58,6 +62,7 @@ router.post("/", async (req, res) => {
     }
 
     const newPatient = new Patient({
+      userId,
       name,
       age,
       mobile,
@@ -65,7 +70,8 @@ router.post("/", async (req, res) => {
       address,
       diseaseCategory,
       diseaseSubCategory,
-      diseaseName
+      diseaseName,
+      status: 'pending'
     });
 
     const postedPatient = await newPatient.save();
@@ -162,6 +168,58 @@ router.post('/verify-payment', authMiddleware, async (req, res) => {
   await appointment.save();
 
   res.json({ success: true });
+});
+
+router.put('/update/:id', async(req, res) => {
+  const { id } = req.params;
+  const status = req.body;
+
+  try {
+    const statusUpdated = await Patient.findByIdAndUpdate(id, status, {new: true, runValidators: true});
+    if (!statusUpdated) {
+      return res.status(400).json({message: "Status not updated"});
+    }
+  } catch (error) {
+    return res.status(500).json({message: error.message});
+    console.log(error);
+  }
+});
+
+router.get('/appointments', async (req, res) => {
+  const { email } = req.query;
+
+  try {
+    if (!email) {
+      return res.status(400).json({ message: "Email is required" });
+    }
+
+    const appointments = await Patient.find({ email: email });
+    return res.status(200).json({ data: appointments });
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({ message: error.message });
+  }
+});
+
+
+router.delete('/cancel-appointment/:id', async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    if (!id) {
+      return res.status(400).json({ message: "Appointment ID is required" });
+    }
+
+    const deletedAppointment = await Patient.findByIdAndDelete(id);
+
+    if (!deletedAppointment) {
+      return res.status(404).json({ message: "Appointment not found" });
+    }
+    return res.status(200).json({ message: "Appointment cancelled successfully" });
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({ message: error.message });
+  }
 });
 
 //Route export

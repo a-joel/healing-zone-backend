@@ -112,6 +112,7 @@ console.log(isUser.password);
     console.log(token);
     
     return res.status(200).json({data: {
+      userId: isUser._id,
         name: isUser.name,
         email: isUser.email,
         role: isUser.role,
