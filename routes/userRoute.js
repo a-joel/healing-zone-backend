@@ -95,7 +95,6 @@ router.post("/auth/login", async (req, res) => {
 
   try {
     const isUser = await User.findOne({email});
-console.log(isUser.password);
 
     if (!isUser) {
       return res.status(400).json({ message: "Email doesn't registered." });

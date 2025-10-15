@@ -32,7 +32,8 @@ router.post("/", async (req, res) => {
     address,
     diseaseCategory,
     diseaseSubCategory,
-    diseaseName
+    diseaseName,
+    doctorName
   } = req.body;
 
   try {
@@ -71,7 +72,7 @@ router.post("/", async (req, res) => {
       diseaseCategory,
       diseaseSubCategory,
       diseaseName,
-      status: 'pending'
+      doctorName
     });
 
     const postedPatient = await newPatient.save();

@@ -44,6 +44,15 @@ const patientShema = mongoose.Schema({
                 type: String,
                 enum: ['Pending', 'Scheduled'],
                 default: 'Pending'
+        },
+        doctorName: {
+                type: String,
+                required: true
+        },
+        paymentStatus: {
+                type: String,
+                enum: ['Pending', 'Completed'],
+                default: 'Pending'
         }
 }, {timestamps: true});
 

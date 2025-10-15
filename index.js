@@ -29,7 +29,7 @@ app.use('/hospitals', hospitalRoute);
 
 app.post('/api/payments/create-checkout-session', authMiddleware, async (req, res) => {
         try {
-                const {appoinmentFor, amount, appoinmentId} = req.body;
+                const {appoinmentFor, amount, appoinmentId, patientName, email} = req.body;
 
         if (!appoinmentFor || !amount || !appoinmentId) {
                 return res.status(400).json({message: "All fields are required"});
@@ -50,12 +50,16 @@ app.post('/api/payments/create-checkout-session', authMiddleware, async (req, re
                                 quantity: 1
                         },
                 ],
+                mode: 'payment',
                 metadata: {
                         appoinmentId: appoinmentId,
                 },
-                succes_url: `${process.env.SERVER_URL}/payment-success?session_id={CHECKOUT_SESSION_ID}`,
-                cancel_url: `${process.env.SERVER_URL}/cancel-payment`,
+                succes_url: `${process.env.CLIENT_URL}/payment-success?session_id={CHECKOUT_SESSION_ID}`,
+                cancel_url: `${process.env.CLIENT_URL}/cancel-payment`,
+                customer_email: email,
         });
+
+        res.json({id: session.id});
         } catch (error) {
               return res.status(500).json({message: error.message});
               console.log(error);
